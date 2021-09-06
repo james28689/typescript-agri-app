@@ -1,26 +1,27 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Switch, Route } from "react-router-dom";
+import Home from './pages/Home';
+import About from "./pages/About";
+import Login from "./pages/Login";
+import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import PrivateRoute from './PrivateRoute';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	return (
+		<BrowserRouter>
+			<AuthProvider>
+				<Switch>
+					<PrivateRoute exact path="/" component={Home} />
+					<Route path="/about" component={About} />
+					<Route path = "/login" component={Login} />
+					<Route path = "/signup" component={Signup} />
+					<Route path="/forgot-password" component={ForgotPassword} />
+				</Switch>
+			</AuthProvider>
+		</BrowserRouter>
+	);
 }
 
 export default App;
