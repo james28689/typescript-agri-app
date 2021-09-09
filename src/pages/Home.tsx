@@ -7,6 +7,8 @@ import { collectionData } from "rxfire/firestore";
 import { useAuth } from "../contexts/AuthContext";
 
 import mapboxgl from "mapbox-gl";
+import Map from "./Map"
+import OnboardingMap from "./OnboardingMap";
 
 const turf = require("@turf/turf");
 
@@ -24,66 +26,6 @@ export default function Home() {
     mapboxgl.accessToken = "pk.eyJ1IjoiamFtZXMyODY4OSIsImEiOiJja3F4eWNqc24xMnd0MzFxcDB2azVzbDZuIn0._BCf462zUp_7C1cjeAGueg";
 
     const [fields, setFields] = useState<IField[]>();
-    const [receivedData, setReceivedData] = useState<any>();
-
-    useEffect(() => {
-        var map = new mapboxgl.Map({
-            container: "my-map",
-            style: "mapbox://styles/mapbox/satellite-streets-v9"
-        });
-
-        map.addControl(
-            new mapboxgl.GeolocateControl({
-                positionOptions: {
-                    enableHighAccuracy: true,
-                },
-                trackUserLocation: true,
-            })
-        );
-
-        map.addControl(new mapboxgl.NavigationControl());
-
-        fetch("https://environment.data.gov.uk/arcgis/rest/services/RPA/LandParcels/MapServer/0/query?where=SBI=106791068&f=geojson")
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                setReceivedData(data);      
-
-                map.addSource("parcels", {
-                    type: "geojson",
-                    data: data
-                });
-        
-                map.addLayer({
-                    id: "parcel-boundaries",
-                    type: "fill",
-                    source: "parcels",
-                    paint: {
-                        "fill-color": "#ff0000",
-                        "fill-opacity": 0.5
-                    }
-                });
-
-                var centerPoint = turf.centerOfMass(data);
-                console.log(centerPoint);
-
-                map.flyTo({center: centerPoint.geometry.coordinates, zoom: 10});
-
-                map.on("click", "parcel-boundaries", (e) => {
-                    let fieldCoords = data.features.map((feature:any) => feature.geometry.coordinates);
-                    // console.log(fieldCoords);
-
-                    const selectedFeature = map.queryRenderedFeatures(e.point, {
-                        layers: ["parcel-boundaries"]
-                    })
-
-                    console.log(selectedFeature);
-                    // let clickedField = fieldCoords.filter(field => {
-                    //     return e.features![0].geometry === 
-                    // })
-                })
-            })
-    }, []);
 
     useEffect(() => {
         const fieldsRef = query(collection(database, "fields"), where("userID", "==", currentUser!.uid));
@@ -115,7 +57,8 @@ export default function Home() {
                 return <p>{field.name}</p>
             })}
 
-            <div id="my-map" style={{ width: "100%", height: 800 }}></div>
+            <OnboardingMap />
+
             { error && <p>{error}</p> }
             <button onClick={handleLogout}>Logout</button>
         </div>
