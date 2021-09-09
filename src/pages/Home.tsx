@@ -7,8 +7,7 @@ import { collectionData } from "rxfire/firestore";
 import { useAuth } from "../contexts/AuthContext";
 
 import mapboxgl from "mapbox-gl";
-import Map from "./Map"
-import OnboardingMap from "./OnboardingMap";
+import Map, { MapFunction } from "./Map"
 
 const turf = require("@turf/turf");
 
@@ -57,7 +56,7 @@ export default function Home() {
                 return <p>{field.name}</p>
             })}
 
-            <OnboardingMap />
+            <Map onMount={MapFunction.fetchGovDataAndDisplay} />
 
             { error && <p>{error}</p> }
             <button onClick={handleLogout}>Logout</button>
