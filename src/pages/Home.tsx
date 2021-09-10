@@ -8,6 +8,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 import mapboxgl from "mapbox-gl";
 import Map, { MapFunction } from "./Map"
+import geojson from "geojson";
 
 const turf = require("@turf/turf");
 
@@ -19,6 +20,7 @@ interface IField {
 
 export default function Home() {
     const [error, setError] = useState("");
+    const [mapSelectedFields, setMapSelectedFields] = useState<geojson.FeatureCollection>();
     const { logout, currentUser } = useAuth();
     const history = useHistory();
 
@@ -47,6 +49,11 @@ export default function Home() {
         }
     }
 
+    function receiveMapFields(fields: geojson.FeatureCollection) {
+        console.log(fields);
+        setMapSelectedFields(fields);
+    }
+
     return (
         <div>
             <h1>Home</h1>
@@ -56,7 +63,7 @@ export default function Home() {
                 return <p>{field.name}</p>
             })}
 
-            <Map onMount={MapFunction.fetchGovDataAndDisplay} />
+            <Map onMount={MapFunction.fetchGovDataAndDisplay} exportFields={receiveMapFields} />
 
             { error && <p>{error}</p> }
             <button onClick={handleLogout}>Logout</button>

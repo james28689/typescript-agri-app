@@ -1,15 +1,19 @@
 import React from "react";
 import mapboxgl from "mapbox-gl";
+
+import geojson from "geojson"
+
 const turf = require("@turf/turf");
 
 mapboxgl.accessToken = "pk.eyJ1IjoiamFtZXMyODY4OSIsImEiOiJja3F4eWNqc24xMnd0MzFxcDB2azVzbDZuIn0._BCf462zUp_7C1cjeAGueg";
 
 type MapProps = {
     onMount: MapFunction;
+    exportFields: (fields: geojson.FeatureCollection) => void;
 }
 
 type MapState = {
-    fieldData: any[];
+    fieldData: geojson.FeatureCollection | undefined;
     selectedFields: string[];
 }
 
@@ -18,20 +22,26 @@ export enum MapFunction {
 }
 
 class MapComponent extends React.Component<MapProps, MapState> {
+    constructor(props: MapProps) {
+        super(props);
+
+        this.handleFinish = this.handleFinish.bind(this);
+    }
+
     state: MapState = {
-        fieldData: [],
+        fieldData: undefined,
         selectedFields: []
     }
 
     fetchGovDataAndDisplay(map: mapboxgl.Map) {
         fetch("https://environment.data.gov.uk/arcgis/rest/services/RPA/LandParcels/MapServer/0/query?where=SBI=106791068&f=geojson&outFields=sheet_id,parcel_id,id")
             .then(res => res.json())
-            .then(data => {
+            .then((data: geojson.FeatureCollection) => {
                 console.log(data);
                 
                 for (let i = 0; i < data.features.length; i++) {
-                    data.features[i].properties.field_id = data.features[i].properties.sheet_id + " " + data.features[i].properties.parcel_id;
-                    data.features[i].id = data.features[i].properties.id;
+                    data.features[i].properties!.field_id = data.features[i].properties!.sheet_id + " " + data.features[i].properties!.parcel_id;
+                    data.features[i].id = data.features[i].properties!.id;
                 }
 
                 this.setState((state) => ({
@@ -49,13 +59,13 @@ class MapComponent extends React.Component<MapProps, MapState> {
                     type: "fill",
                     source: "parcels",
                     paint: {
-                        "fill-color": "#ff0000",
-                        "fill-opacity": [
+                        "fill-color": [
                             "case",
                             ["boolean", ["feature-state", "selected"], false],
-                            1,
-                            0.5
-                        ]
+                            "#00ff00",
+                            "#ff0000"
+                        ],
+                        "fill-opacity": 0.5
                     }
                 });
 
@@ -95,8 +105,16 @@ class MapComponent extends React.Component<MapProps, MapState> {
                 var centerPoint = turf.centerOfMass(data);
                 console.log(centerPoint);
 
-                map.flyTo({center: centerPoint.geometry.coordinates, zoom: 10});
+                map.flyTo({center: centerPoint.geometry.coordinates, zoom: 11});
             });
+    }
+
+    handleFinish() {
+        let fields = Object.assign({}, this.state.fieldData);
+
+        fields!.features = fields!.features.filter(field => this.state.selectedFields.includes(field.properties!.field_id));
+
+        this.props.exportFields(fields!);
     }
 
     componentDidMount() {
@@ -125,7 +143,7 @@ class MapComponent extends React.Component<MapProps, MapState> {
         return (
             <div>
                 <div id="map-container" style={{ width: "100%", height: 800 }}></div>
-                <button onClick={() => console.log(this.state)}>Log selectedFields</button>
+                <button onClick={this.handleFinish}>Finish</button>
             </div>
         )
     }
