@@ -1,15 +1,13 @@
 import React from "react";
 import mapboxgl from "mapbox-gl";
-
 import geojson from "geojson"
-
 const turf = require("@turf/turf");
 
 mapboxgl.accessToken = "pk.eyJ1IjoiamFtZXMyODY4OSIsImEiOiJja3F4eWNqc24xMnd0MzFxcDB2azVzbDZuIn0._BCf462zUp_7C1cjeAGueg";
 
 type MapProps = {
-    onMount: MapFunction;
-    exportFields: (fields: geojson.FeatureCollection) => void;
+    SBI?: string;
+    exportFields?: (fields: geojson.FeatureCollection) => void;
 }
 
 type MapState = {
@@ -17,24 +15,64 @@ type MapState = {
     selectedFields: string[];
 }
 
-export enum MapFunction {
-    fetchGovDataAndDisplay,
-}
-
-class MapComponent extends React.Component<MapProps, MapState> {
+export default class RPAMapComponent extends React.Component<MapProps, MapState> {
     constructor(props: MapProps) {
         super(props);
 
         this.handleFinish = this.handleFinish.bind(this);
+        this.handleSelectAll = this.handleSelectAll.bind(this);
     }
+
+    map: mapboxgl.Map | undefined;
 
     state: MapState = {
         fieldData: undefined,
         selectedFields: []
     }
 
-    fetchGovDataAndDisplay(map: mapboxgl.Map) {
-        fetch("https://environment.data.gov.uk/arcgis/rest/services/RPA/LandParcels/MapServer/0/query?where=SBI=106791068&f=geojson&outFields=sheet_id,parcel_id,id")
+    handleFinish() {
+        let fields = Object.assign({}, this.state.fieldData);
+
+        fields!.features = fields!.features.filter(field => this.state.selectedFields.includes(field.properties!.field_id));
+
+        this.props.exportFields!(fields!);
+    }
+
+    handleSelectAll() {
+        const allFields: string[] = []
+        this.state.fieldData!.features.forEach(feature => {
+            allFields.push(feature.properties!.field_id);
+            this.map!.setFeatureState(
+                { source: "parcels", id: feature.id! },
+                { selected: true }
+            )
+        });
+
+        console.log(allFields);
+
+        this.setState({
+            selectedFields: allFields
+        });
+    }
+
+    componentDidMount() {
+        this.map = new mapboxgl.Map({
+            container: "map-container",
+            style: "mapbox://styles/mapbox/satellite-streets-v9"
+        });
+
+        this.map.addControl(
+            new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true,
+                },
+                trackUserLocation: true,
+            })
+        );
+
+        this.map.addControl(new mapboxgl.NavigationControl());
+
+        fetch(`https://environment.data.gov.uk/arcgis/rest/services/RPA/LandParcels/MapServer/0/query?where=SBI=${this.props.SBI!}&f=geojson&outFields=sheet_id,parcel_id,id,area_ha`)
             .then(res => res.json())
             .then((data: geojson.FeatureCollection) => {
                 console.log(data);
@@ -49,12 +87,12 @@ class MapComponent extends React.Component<MapProps, MapState> {
                     fieldData: data
                 }));
 
-                map.addSource("parcels", {
+                this.map!.addSource("parcels", {
                     type: "geojson",
                     data: data
                 });
 
-                map.addLayer({
+                this.map!.addLayer({
                     id: "parcel-boundaries",
                     type: "fill",
                     source: "parcels",
@@ -69,8 +107,8 @@ class MapComponent extends React.Component<MapProps, MapState> {
                     }
                 });
 
-                map.on("click", "parcel-boundaries", (e) => {
-                    const clicked = map.queryRenderedFeatures(e.point, {
+                this.map!.on("click", "parcel-boundaries", (e) => {
+                    const clicked = this.map!.queryRenderedFeatures(e.point, {
                         layers: ["parcel-boundaries"]
                     })
 
@@ -84,7 +122,7 @@ class MapComponent extends React.Component<MapProps, MapState> {
                             selectedFields: newSelectedFields,
                         });
 
-                        map.setFeatureState(
+                        this.map!.setFeatureState(
                             { source: "parcels", id: clicked[0].id! },
                             { selected: false }
                         )
@@ -93,60 +131,40 @@ class MapComponent extends React.Component<MapProps, MapState> {
                             selectedFields: [...state.selectedFields, selectedID],
                         }));
 
-                        map.setFeatureState(
+                        this.map!.setFeatureState(
                             { source: "parcels", id: clicked[0].id! },
                             { selected: true }
                         )
                     }
-
-
                 });
 
                 var centerPoint = turf.centerOfMass(data);
                 console.log(centerPoint);
 
-                map.flyTo({center: centerPoint.geometry.coordinates, zoom: 11});
+                this.map!.flyTo({center: centerPoint.geometry.coordinates, zoom: 11});
             });
-    }
-
-    handleFinish() {
-        let fields = Object.assign({}, this.state.fieldData);
-
-        fields!.features = fields!.features.filter(field => this.state.selectedFields.includes(field.properties!.field_id));
-
-        this.props.exportFields(fields!);
-    }
-
-    componentDidMount() {
-        var map = new mapboxgl.Map({
-            container: "map-container",
-            style: "mapbox://styles/mapbox/satellite-streets-v9"
-        });
-
-        map.addControl(
-            new mapboxgl.GeolocateControl({
-                positionOptions: {
-                    enableHighAccuracy: true,
-                },
-                trackUserLocation: true,
-            })
-        );
-
-        map.addControl(new mapboxgl.NavigationControl());
-
-        if (this.props.onMount === MapFunction.fetchGovDataAndDisplay) {
-            this.fetchGovDataAndDisplay(map);
-        }
     }
 
     render() {
         return (
-            <div>
-                <div id="map-container" style={{ width: "100%", height: 800 }}></div>
-                <button onClick={this.handleFinish}>Finish</button>
+            <div id="container" style={{ display: "flex" }}>
+                <div id="left" style={{ width: "100%" }}>
+                    <div id="map-container" style={{ width: "100%", height: 800 }}></div>
+
+                    <button onClick={this.handleSelectAll}>Select All</button>
+
+                    <button onClick={this.handleFinish}>Next</button>
+                </div>
+
+                <div id="right" style={{ minWidth: "200px" }}>
+                    <h2>Selected Field IDs</h2>
+                    <ul>
+                    { this.state.selectedFields.map(field => {
+                        return <li key={field}>{field}</li> 
+                    }) }
+                    </ul>
+                </div>
             </div>
         )
     }
 }
-
-export default MapComponent;

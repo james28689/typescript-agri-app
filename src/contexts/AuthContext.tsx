@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { auth } from "../firebase";
+import { auth, database } from "../firebase";
 import { createUserWithEmailAndPassword, updateEmail, updatePassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth"
+import { doc, setDoc } from "firebase/firestore";
 
 interface ContextType {
     currentUser: User | null;
-    signup(email: string, password: string): Promise<UserCredential>;
+    signup(email: string, password: string): Promise<void>;
     login(email: string, password: string): Promise<UserCredential>;
     logout(): Promise<void>;
     resetPassword(email: string): Promise<void>;
@@ -22,8 +23,14 @@ export function AuthProvider({ children }: { children: any }) {
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
-    function signup(email: string, password: string) {
-        return createUserWithEmailAndPassword(auth, email, password);
+    async function signup(email: string, password: string) {
+        createUserWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential:UserCredential) => {
+            await setDoc(doc(database, "users", userCredential.user.uid), {
+                onboard: false
+            });
+        }
+        )
     }
 
     function login(email: string, password: string) {
