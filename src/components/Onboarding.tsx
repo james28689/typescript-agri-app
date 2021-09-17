@@ -42,7 +42,7 @@ export default function Home() {
             })
             .then(() => {
                 updateDoc(doc(database, "users", currentUser!.uid), {
-                    onboard: true
+                    mustOnboard: false
                 });
             })
         }

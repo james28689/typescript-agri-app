@@ -26,14 +26,10 @@ export default function Home() {
     useEffect(() => {
         const fieldsRef = query(collection(database, "fields"), where("userID", "==", currentUser!.uid));
 
-        const fieldGeoObserver = object(ref(realtimeDB, "fields/" + currentUser!.uid + "/"));
-        const fieldInfoObserver = collectionData(fieldsRef, { idField: "id" });
-
-        fieldGeoObserver.subscribe(receivedGeometries => {
+        const fieldGeoObserver = object(ref(realtimeDB, "fields/" + currentUser!.uid + "/")).subscribe(receivedGeometries => {
             setFieldGeometries(receivedGeometries.snapshot.val());
         });
-
-        fieldInfoObserver.subscribe(receivedFields => {
+        const fieldInfoObserver = collectionData(fieldsRef, { idField: "id" }).subscribe(receivedFields => {
             setFields(receivedFields as IField[]);
         });
 
@@ -52,9 +48,10 @@ export default function Home() {
         //     setFields(received);
         // });
 
-        // return function cleanup() {
-        //     fieldsSubscription.unsubscribe();
-        // }
+        return function cleanup() {
+            fieldGeoObserver.unsubscribe();
+            fieldInfoObserver.unsubscribe();
+        }
 
         // collectionData(fieldsRef, { idField: "id"})
         // .subscribe(receivedFields => {

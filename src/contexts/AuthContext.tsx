@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: any }) {
         createUserWithEmailAndPassword(auth, email, password)
         .then(async (userCredential:UserCredential) => {
             await setDoc(doc(database, "users", userCredential.user.uid), {
-                onboard: false
+                mustOnboard: true
             });
         }
         )

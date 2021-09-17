@@ -9,7 +9,7 @@ import Onboarding from "../components/Onboarding";
 import Dashboard from "../components/Dashboard";
 
 export default function Home() {
-    const [onboard, setOnboard] = useState<Boolean | null>(null);
+    const [mustOnboard, setMustOnboard] = useState<Boolean | null>(null);
     const { currentUser } = useAuth();
 
     useEffect(() => {
@@ -17,11 +17,11 @@ export default function Home() {
 
         docData(userDocRef, { idField: "id"})
         .subscribe(userData => {
-            setOnboard(userData.onboard);
+            setMustOnboard(userData.mustOnboard);
         })
     }, [currentUser]);
 
-    if (!onboard) {
+    if (mustOnboard) {
         return <Onboarding />
     } else {
         return <Dashboard />
