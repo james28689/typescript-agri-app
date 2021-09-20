@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { auth, database } from "../firebase";
-import { createUserWithEmailAndPassword, updateEmail, updatePassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth"
+import { createUserWithEmailAndPassword, updateEmail, updatePassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, deleteUser, User, UserCredential } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore";
 
-interface ContextType {
+interface IAuthContext {
     currentUser: User | null;
     signup(email: string, password: string): Promise<void>;
     login(email: string, password: string): Promise<UserCredential>;
@@ -11,9 +11,10 @@ interface ContextType {
     resetPassword(email: string): Promise<void>;
     changeEmail(email: string): Promise<void> | undefined;
     changePassword(password: string): Promise<void> | undefined;
+    removeUser: () => void;
 }
 
-const AuthContext = React.createContext({} as ContextType);
+const AuthContext = React.createContext({} as IAuthContext);
 
 export function useAuth() {
     return React.useContext(AuthContext);
@@ -57,6 +58,10 @@ export function AuthProvider({ children }: { children: any }) {
         }
     }
 
+    function removeUser() {
+        deleteUser(currentUser!);
+    }
+
     useEffect(() => {
         onAuthStateChanged(auth, (user) => {
             setCurrentUser(user);
@@ -64,14 +69,15 @@ export function AuthProvider({ children }: { children: any }) {
         });
     }, []);
 
-    const value: ContextType = {
+    const value: IAuthContext = {
         currentUser,
         signup,
         login,
         logout,
         resetPassword,
         changeEmail,
-        changePassword
+        changePassword,
+        removeUser
     };
 
     return (

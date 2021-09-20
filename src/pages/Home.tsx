@@ -13,12 +13,14 @@ export default function Home() {
     const { currentUser } = useAuth();
 
     useEffect(() => {
-        const userDocRef = doc(database, `users/${currentUser!.uid}`);
+        if (currentUser) {
+            const userDocRef = doc(database, `users/${currentUser!.uid}`);
 
-        docData(userDocRef, { idField: "id"})
-        .subscribe(userData => {
-            setMustOnboard(userData.mustOnboard);
-        })
+            docData(userDocRef, { idField: "id"})
+            .subscribe(userData => {
+                setMustOnboard(userData.mustOnboard);
+            })
+        }
     }, [currentUser]);
 
     if (mustOnboard) {

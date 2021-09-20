@@ -5,8 +5,8 @@ import { ref, set } from "firebase/database";
 
 import { useAuth } from "../contexts/AuthContext";
 import geojson from "geojson";
-import RPAMapComponent from "./RPAMap";
-import NamingMapComponent, { FieldNamePair } from "./NamingMap";
+import RPAMapComponent from "./maps/RPAMap";
+import NamingMapComponent, { FieldNamePair } from "./maps/NamingMap";
 
 enum OnboardingStep {
     SBI,

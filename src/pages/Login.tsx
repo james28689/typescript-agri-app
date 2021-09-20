@@ -3,6 +3,10 @@ import { Link, useHistory } from 'react-router-dom';
 
 import { useAuth } from "../contexts/AuthContext";
 
+import LargeTextInput from '../components/authentication/LargeTextInput';
+import LargeButton from '../components/authentication/LargeButton';
+import BackgroundCard from '../components/authentication/BackgroundCard';
+
 export default function Login() {
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
@@ -28,25 +32,19 @@ export default function Login() {
     }
 
     return (
-        <div>
-            <h1>Login</h1>
+        <BackgroundCard title="Login">
+            { error && <p className="text-md text-red-500 mb-4">{error}</p>}
 
-            { error && <p>{error}</p>}
-
-            <form onSubmit={handleSubmit}>
-                <label>Email</label>
-                <input ref={emailRef} type="email" required />
-                <br /><br />
-
-                <label>Password</label>
-                <input ref={passwordRef} type="password" required />
-                <br /><br />
-
-                <button type="submit" disabled={loading}>Login</button>
+            <form className="space-y-6" onSubmit={handleSubmit}>
+                <LargeTextInput labelText="Email Address" inputRef={emailRef} inputType="email"  />
+                <LargeTextInput labelText="Password" inputRef={passwordRef} inputType="password" />
+                <Link className="mt-2 text-xs font-semibold text-primary-600 hover:text-primary-800 cursor-pointer" to="/forgot-password">Forgot Password?</Link>
+                <LargeButton loading={loading} text="Login" />
             </form>
 
-            <Link to="/forgot-password">Forgot Password?</Link>
-            <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
-        </div>
+            <div className="text-sm font-semibold text-gray-700 text-center mt-8">
+                Don't have an account? <Link className="cursor-pointer text-primary-600 hover:text-primary-800" to="/signup">Sign Up</Link>
+            </div>
+        </BackgroundCard>
     )
 }

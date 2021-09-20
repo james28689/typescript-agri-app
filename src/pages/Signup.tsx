@@ -3,6 +3,10 @@ import { Link, useHistory } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext";
 
+import LargeTextInput from '../components/authentication/LargeTextInput';
+import LargeButton from '../components/authentication/LargeButton';
+import BackgroundCard from '../components/authentication/BackgroundCard';
+
 export default function Signup() {
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
@@ -35,28 +39,20 @@ export default function Signup() {
     }
 
     return (
-        <div>
-            <h1>Signup</h1>
+        <BackgroundCard title="Sign Up">
 
             { error && <p>{error}</p> }
 
-            <form onSubmit={handleSubmit}>
-                <label>Email</label>       
-                <input type="email" ref={emailRef} />
-                <br /><br />
-
-                <label>Password</label>
-                <input type="password" ref={passwordRef} />
-                <br /><br />
-
-                <label>Confirm Password</label>
-                <input type="password" ref={passwordConfirmRef} />
-                <br /><br />
-
-                <button type="submit" disabled={loading}>Sign Up</button>
+            <form className="space-y-6" onSubmit={handleSubmit}>
+                <LargeTextInput labelText="Email Address" inputType="email" inputRef={emailRef} />
+                <LargeTextInput labelText="Password" inputType="password" inputRef={passwordRef} />
+                <LargeTextInput labelText="Confirm Password" inputType="password" inputRef={passwordConfirmRef} />
+                <LargeButton text="Sign Up" loading={loading} />
             </form>
 
-            <p>Already have an account? <Link to="/login">Login</Link></p>
-        </div>
+            <div className="text-sm font-semibold text-gray-700 text-center mt-8">
+                Already have an account? <Link className="cursor-pointer text-primary-600 hover:text-primary-800" to="/login">Login</Link>
+            </div>
+        </BackgroundCard>
     )
 }

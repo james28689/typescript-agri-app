@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext";
 
+import LargeTextInput from '../components/authentication/LargeTextInput';
+import LargeButton from '../components/authentication/LargeButton';
+import BackgroundCard from '../components/authentication/BackgroundCard';
+
 export default function ForgotPassword() {
     const emailRef = useRef<HTMLInputElement>(null);
     const { resetPassword } = useAuth();
@@ -19,8 +23,8 @@ export default function ForgotPassword() {
             setLoading(true);
             await resetPassword(emailRef.current!.value);
             setMessage("Password reset email sent");
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            console.log(error.message);
             setError("Failed to sign in");
         }
 
@@ -28,24 +32,20 @@ export default function ForgotPassword() {
     }
 
     return (
-        <div>
-            <h1>Forgot Password</h1>
+        <BackgroundCard title="Forgot Password">
+            { error && <p>{error}</p> }
+
+            <form className="space-y-6" onSubmit={handleSubmit}>
+                <LargeTextInput labelText="Email Address" inputType="email" inputRef={emailRef} />
+
+                <LargeButton text="Reset Password" loading={loading} />
+            </form>
 
             { message && <p>{message}</p> }
 
-            <form onSubmit={handleSubmit}>
-                <label>Email</label>
-                <input type="email" ref={emailRef} />
-                <br /><br />
-
-                <button type="submit" disabled={loading}>Reset Password</button>
-
-                { error && <p>{error}</p> }
-            </form>
-
-            <Link to="/login">Login</Link>
-
-            <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
-        </div>
+            <div className="text-sm font-semibold text-gray-700 text-center mt-8">
+                Don't have an account? <Link className="cursor-pointer text-primary-600 hover:text-primary-800" to="/signup">Sign Up</Link>
+            </div>
+        </BackgroundCard>
     )
 }
