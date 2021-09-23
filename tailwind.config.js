@@ -8,13 +8,17 @@ module.exports = {
       transparent: "transparent",
       current: "currentColor",
       primary: colors.lime,
+      secondary: colors.gray,
       // black: colors.black,
       // white: colors.white,
       ...colors
-    }
+    },
   },
   variants: {
-    extend: {},
+    extend: {
+      grayscale: ["hover"],
+      "bg-opacity": ["hover"],
+    },
   },
   plugins: [require("@tailwindcss/forms")],
 }
