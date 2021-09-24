@@ -18,7 +18,7 @@ const NavItemLinks: LinkType[] = [
 
 export default function Nav() {
     return (
-        <div className="fixed bg-white h-full border-r w-60">
+        <div className="fixed bg-white h-full border-r w-60 z-20">
             <ul className="flex flex-col items-center h-full space-y-2">
                 <li className="w-full">
                     <a href="/" className="flex items-center text-secondary-900 font-semibold text-lg py-4 px-4 w-44 bg-transparent rounded-xl mx-4 my-2">
