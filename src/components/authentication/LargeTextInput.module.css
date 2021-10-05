@@ -1,0 +1,23 @@
+.myText {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 700;
+    color: #3F3F46;
+    letter-spacing: 0.025em;
+    margin-bottom: 0.5rem;
+}
+
+.myInput {
+    width: 100%;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    border: 1px solid #E4E4E7;
+    border-radius: 0.5rem;
+}
+
+.myInput:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border: 2px solid #84CC16;
+    box-shadow: none;
+}

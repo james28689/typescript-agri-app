@@ -33,7 +33,7 @@ export default function Home() {
             <div className="w-screen h-screen ml-60">
                 <div className="flex items-center px-6 py-4">
                     <div className="relative flex w-full flex-wrap items-stretch">
-                        <span className="z-10 h-full leading-snug font-normal absolute text-center text-secondary-500 fill-current absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3">
+                        <span className="z-10 h-full leading-snug font-normal text-center text-secondary-500 fill-current absolute bg-transparent rounded text-base items-center justify-center w-8 pl-3 py-3">
                             <SearchIcon className="h-5 w-5" />
                         </span>
                         <input type="text" placeholder="Search here..." className="border-secondary-300 px-3 py-3 placeholder-secondary-300 text-secondary-600 relative bg-white rounded-lg text-sm outline-none focus:outline-none focus:border-green-500 focus:ring-primary-500 w-1/4 pl-10"/>

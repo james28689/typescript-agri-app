@@ -1,0 +1,45 @@
+.myBackground {
+    width: 100vw;
+    height: 100vh;
+    background: no-repeat;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.myCard {
+    max-width: 28rem;
+    background-color: white;
+    padding: 2rem 1.5rem;
+    width: 100vw;
+    height: 100vw;
+}
+
+.myCard > * {
+    margin: 2rem 0;
+}
+
+/* medium */
+@media (min-width: 768px) {
+    .myCard {
+        width: 100%;
+        box-shadow: 0 25px 50px -12px (0, 0, 0, 0.25);
+        border-radius: 0.5rem;
+        height: auto;
+    }
+}
+
+.myIcon {
+    height: 3.5rem;
+    width: auto;
+    margin: 0 auto;
+}
+
+.myTitle {
+    text-align: center;
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    font-weight: 800;
+    color: #18181B;
+}

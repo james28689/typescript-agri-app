@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./LargeTextInput.module.css";
 
 type LargeTextInputProps = {
     labelText: string;
@@ -13,4 +14,11 @@ export default function LargeTextInput(props: LargeTextInputProps) {
             <input className="w-full text-lg border border-gray-300 rounded-lg focus:outline-none focus:border-primary-500 focus:ring-primary-500" ref={props.inputRef} type={props.inputType} required />
         </div>
     )
+
+    // return (
+    //     <div>
+    //         <div className={styles.myText}>{props.labelText}</div>
+    //         <input className={styles.myInput} ref={props.inputRef} type={props.inputType} required />
+    //     </div>
+    // )
 }
