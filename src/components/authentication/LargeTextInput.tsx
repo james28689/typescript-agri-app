@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./LargeTextInput.module.css";
 
 type LargeTextInputProps = {
     labelText: string;
