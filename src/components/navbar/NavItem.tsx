@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-type NavItemProps = {
+interface NavItemProps {
     title: string;
     links: LinkType[];
 }
 
-export type LinkType = {
+export interface LinkType {
     link: string
     text: string;
     icon: React.FC<React.SVGProps<SVGSVGElement>>;
