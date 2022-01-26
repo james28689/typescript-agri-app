@@ -3,12 +3,12 @@ import { useAuth } from "../contexts/AuthContext";
 import { useDatabase } from "../contexts/DatabaseContext"
 
 export default function Settings() {
-    const { removeUser } = useAuth();
-    const { deleteUserFields } = useDatabase();
+    // const { removeUser } = useAuth();
+    // const { deleteUserFields } = useDatabase();
 
     async function handleDeleteAccount() {
-        await deleteUserFields();
-        await removeUser();
+        // await deleteUserFields();
+        // await removeUser();
         
     }
 

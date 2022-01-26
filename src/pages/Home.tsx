@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-import { doc } from "firebase/firestore";
-import { database } from "../firebase"
-import { docData } from "rxfire/firestore";
 import { useAuth } from "../contexts/AuthContext";
 
 import Onboarding from "../components/Onboarding";
@@ -12,18 +9,18 @@ export default function Home() {
     const [mustOnboard, setMustOnboard] = useState<Boolean | null>(null);
     const { currentUser } = useAuth();
 
-    useEffect(() => {
-        if (currentUser) {
-            const userDocRef = doc(database, `users/${currentUser!.uid}`);
+    // useEffect(() => {
+    //     if (currentUser) {
+    //         const userDocRef = doc(database, `users/${currentUser!.uid}`);
 
-            docData(userDocRef, { idField: "id"})
-            .subscribe(userData => {
-                setMustOnboard(userData.mustOnboard);
-            })
-        }
-    }, [currentUser]);
+    //         docData(userDocRef, { idField: "id"})
+    //         .subscribe(userData => {
+    //             setMustOnboard(userData.mustOnboard);
+    //         })
+    //     }
+    // }, [currentUser]);
 
-    if (mustOnboard) {
+    if (currentUser!.mustOnboard) {
         return <Onboarding />
     } else {
         return <Dashboard />

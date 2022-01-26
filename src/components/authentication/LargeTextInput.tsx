@@ -3,7 +3,7 @@ import React from "react";
 type LargeTextInputProps = {
     labelText: string;
     inputRef: React.RefObject<HTMLInputElement>;
-    inputType: "email" | "password";
+    inputType: "email" | "password" | "text";
 }
 
 export default function LargeTextInput(props: LargeTextInputProps) {

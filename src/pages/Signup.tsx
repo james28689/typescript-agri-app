@@ -9,6 +9,8 @@ import BackgroundCard from '../components/authentication/BackgroundCard';
 
 export default function Signup() {
     const emailRef = useRef<HTMLInputElement>(null);
+    const firstNameRef = useRef<HTMLInputElement>(null);
+    const lastNameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     const passwordConfirmRef = useRef<HTMLInputElement>(null);
 
@@ -28,7 +30,7 @@ export default function Signup() {
         try {
             setError("");
             setLoading(true);
-            await signup(emailRef.current!.value, passwordRef.current!.value);
+            await signup(emailRef.current!.value, passwordRef.current!.value, firstNameRef.current!.value, lastNameRef.current!.value);
             history.push("/");
         } catch (error) {
             console.log(error);
@@ -45,6 +47,8 @@ export default function Signup() {
 
             <form className="space-y-6" onSubmit={handleSubmit}>
                 <LargeTextInput labelText="Email Address" inputType="email" inputRef={emailRef} />
+                <LargeTextInput labelText="First Name" inputType="text" inputRef={firstNameRef} />
+                <LargeTextInput labelText="Last Name" inputType="text" inputRef={lastNameRef} />
                 <LargeTextInput labelText="Password" inputType="password" inputRef={passwordRef} />
                 <LargeTextInput labelText="Confirm Password" inputType="password" inputRef={passwordConfirmRef} />
                 <LargeButton text="Sign Up" loading={loading} />

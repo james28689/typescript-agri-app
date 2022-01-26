@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { auth, database } from "../firebase";
-import { createUserWithEmailAndPassword, updateEmail, updatePassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, deleteUser, User, UserCredential } from "firebase/auth"
-import { doc, setDoc } from "firebase/firestore";
+import axios from "axios";
+
+interface IUser {
+    email: string;
+    firstName: string;
+    lastName: string;
+    mustOnboard: string;
+}
 
 interface IAuthContext {
-    currentUser: User | null;
-    signup(email: string, password: string): Promise<void>;
-    login(email: string, password: string): Promise<UserCredential>;
-    logout(): Promise<void>;
-    resetPassword(email: string): Promise<void>;
-    changeEmail(email: string): Promise<void> | undefined;
-    changePassword(password: string): Promise<void> | undefined;
-    removeUser: () => void;
+    currentUser: IUser | null;
+    accessToken: string;
+    signup(email: string, password: string, firstName: string, lastName: string): Promise<void>;
+    login(email: string, password: string): Promise<void>;
+    logout(): void;
+    changeEmail(email: string): Promise<void>;
+    changePassword(password: string): Promise<void>;
+    changeMustOnboard(onboard: boolean): Promise<void>;
 }
 
 const AuthContext = React.createContext({} as IAuthContext);
@@ -21,63 +26,118 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }: { children: any }) {
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [currentUser, setCurrentUser] = useState<IUser | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [accessToken, setAccessToken] = useState("");
+    const [refreshToken, setRefreshToken] = useState("");
 
-    async function signup(email: string, password: string) {
-        createUserWithEmailAndPassword(auth, email, password)
-        .then(async (userCredential:UserCredential) => {
-            await setDoc(doc(database, "users", userCredential.user.uid), {
-                mustOnboard: true
-            });
-        }
-        )
+    async function signup(email: string, password: string, firstName: string, lastName: string) {
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/signup`, {
+            firstName,
+            lastName,
+            email,
+            password
+        }).catch((err: any) => {
+            console.log(err);
+        }).then((res: any) => {
+            console.log(res);
+        })
     }
 
-    function login(email: string, password: string) {
-        return signInWithEmailAndPassword(auth, email, password);
+    async function login(email: string, password: string) {
+        axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/signin`, {
+            email,
+            password
+        }).catch((err: any) => {
+            console.log(err);
+        }).then((res: any) => {
+            console.log(res)
+
+            const newUserInfo: IUser = {
+                email: res.data.email,
+                firstName: res.data.firstName,
+                lastName: res.data.lastName,
+                mustOnboard: res.data.mustOnboard
+            }
+
+            setCurrentUser(newUserInfo);
+            setAccessToken(res.data.accessToken);
+            setRefreshToken(res.data.refreshToken);
+
+            setTimeout(refreshAccessTokens, ((res.data.tokenExpiry * 1000) - 30_000));
+        })
+    }
+
+    async function refreshAccessTokens() {
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/refresh-token`, {
+            refreshToken
+        }).catch((err: any) => {
+            console.log(err);
+        }).then((res: any) => {
+            setAccessToken(res.data.accessToken);
+            setRefreshToken(res.data.refreshToken);
+
+            setTimeout(refreshAccessTokens, ((res.data.tokenExpiry * 1000) - 30_000));
+        })
     }
 
     function logout() {
-        return signOut(auth);
+        setCurrentUser(null);
+        setAccessToken("");
+        setRefreshToken("");
     }
 
-    function resetPassword(email: string) {
-        return sendPasswordResetEmail(auth, email);
+    async function changeEmail(email: string) {
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-email`, {
+            email
+        }, {
+            headers: {
+                "x-access-token": accessToken
+            }
+        }).catch((err: any) => {
+            console.log(err);
+        }).then((res: any) => {
+            console.log(res);
+        })
     }
 
-    function changeEmail(email: string) {
-        if (currentUser !== null) {
-            return updateEmail(currentUser, email);
-        }
+    async function changePassword(password: string) {
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-password`, {
+            password
+        }, {
+            headers: {
+                "x-access-token": accessToken
+            }
+        }).catch((err: any) => {
+            console.log(err);
+        }).then((res: any) => {
+            console.log(res);
+        })
     }
 
-    function changePassword(password: string) {
-        if (currentUser !== null) {
-            return updatePassword(currentUser, password);
-        }
+    async function changeMustOnboard(onboard: boolean) {
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-onboard`, {
+            onboard
+        }, {
+            headers: {
+                "x-access-token": accessToken
+            }
+        }).catch((err) => {
+            console.log(err)
+        }).then((res: any) => {
+            console.log(res);
+        })
     }
-
-    function removeUser() {
-        deleteUser(currentUser!);
-    }
-
-    useEffect(() => {
-        onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user);
-            setLoading(false);
-        });
-    }, []);
-
+    
     const value: IAuthContext = {
         currentUser,
+        accessToken,
         signup,
         login,
         logout,
-        resetPassword,
         changeEmail,
         changePassword,
-        removeUser
+        changeMustOnboard
     };
 
     return (

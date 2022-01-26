@@ -1,9 +1,6 @@
 import React, { useState, useRef } from "react";
-import { collection, doc, addDoc, updateDoc } from "firebase/firestore";
-import { database, realtimeDB } from "../firebase";
-import { ref, set } from "firebase/database";
-
 import { useAuth } from "../contexts/AuthContext";
+import { useDatabase } from "../contexts/DatabaseContext";
 import geojson from "geojson";
 import RPAMapComponent from "./maps/RPAMap";
 import NamingMapComponent, { FieldNamePair } from "./maps/NamingMap";
@@ -21,7 +18,8 @@ export default function Home() {
     const [SBI, setSBI] = useState("");
     const [mapSelectedFields, setMapSelectedFields] = useState<geojson.FeatureCollection>();
 
-    const { currentUser } = useAuth();
+    const { changeMustOnboard } = useAuth();
+    const { createField } = useDatabase();
 
     function receiveMapFields(fields: geojson.FeatureCollection) {
         console.log(fields);
@@ -31,22 +29,32 @@ export default function Home() {
 
     function sendFieldsToDatabase(givenNames: FieldNamePair[]) {
         console.log(givenNames);
+
         for (let i = 0; i < mapSelectedFields!.features.length; i++) {
-            addDoc(collection(database, "fields"), {
-                name: givenNames.filter(pair => pair.field_id === mapSelectedFields!.features[i].properties!.field_id)[0].name,
-                userID: currentUser!.uid,
-                rpa_field_id: mapSelectedFields!.features[i].properties!.field_id,
-            })
-            .then((fieldRef) => {
-                set(ref(realtimeDB, "fields/" + currentUser!.uid + "/" + fieldRef.id), mapSelectedFields!.features[i]);
-            })
-            .then(() => {
-                updateDoc(doc(database, "users", currentUser!.uid), {
-                    mustOnboard: false
-                });
-            })
+            createField(givenNames.filter(pair => pair.field_id === mapSelectedFields!.features[i].properties!.field_id)[0].name, mapSelectedFields!.features[i].properties!.field_id, mapSelectedFields!.features[i]);
         }
+
+        changeMustOnboard(false);
     }
+
+    // function sendFieldsToDatabase(givenNames: FieldNamePair[]) {
+    //     console.log(givenNames);
+    //     for (let i = 0; i < mapSelectedFields!.features.length; i++) {
+    //         addDoc(collection(database, "fields"), {
+    //             name: givenNames.filter(pair => pair.field_id === mapSelectedFields!.features[i].properties!.field_id)[0].name,
+    //             userID: currentUser!.uid,
+    //             rpa_field_id: mapSelectedFields!.features[i].properties!.field_id,
+    //         })
+    //         .then((fieldRef) => {
+    //             set(ref(realtimeDB, "fields/" + currentUser!.uid + "/" + fieldRef.id), mapSelectedFields!.features[i]);
+    //         })
+    //         .then(() => {
+    //             updateDoc(doc(database, "users", currentUser!.uid), {
+    //                 mustOnboard: false
+    //             });
+    //         })
+    //     }
+    // }
 
     if (onboardingStep === OnboardingStep.SBI) {
         return (

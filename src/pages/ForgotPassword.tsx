@@ -9,7 +9,7 @@ import BackgroundCard from '../components/authentication/BackgroundCard';
 
 export default function ForgotPassword() {
     const emailRef = useRef<HTMLInputElement>(null);
-    const { resetPassword } = useAuth();
+    // const { resetPassword } = useAuth();
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
@@ -21,7 +21,8 @@ export default function ForgotPassword() {
             setMessage("");
             setError("");
             setLoading(true);
-            await resetPassword(emailRef.current!.value);
+            // await resetPassword(emailRef.current!.value);
+            console.log("Placeholder for reset password email")
             setMessage("Password reset email sent");
         } catch (error: any) {
             console.log(error.message);
