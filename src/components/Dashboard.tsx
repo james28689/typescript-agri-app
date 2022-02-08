@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useAuth } from "../contexts/AuthContext";
-// import { useDatabase } from "../contexts/DatabaseContext";
+import { useDatabase } from "../contexts/DatabaseContext";
+import DashboardMapComponent from "./maps/DashboardMap";
 import Nav from "./navbar/Nav";
 
 import { ReactComponent as SearchIcon } from "../images/search.svg";
@@ -12,7 +13,7 @@ export default function Home() {
     const [error, setError] = useState("");
     const [userMenuOpened, setUserMenuOpened] = useState(false);
     const { logout, currentUser } = useAuth();
-    // const { fieldInfos, fieldGeometries } = useDatabase();
+    const { fields } = useDatabase();
     const history = useHistory();
 
     async function handleLogout() {
@@ -24,6 +25,10 @@ export default function Home() {
             console.log(error);
             setError("Error logging out");
         }
+    }
+
+    function displayFieldData() {
+        console.log(fields);
     }
 
     return (
@@ -44,7 +49,7 @@ export default function Home() {
                         { userMenuOpened && (
                             <div className="absolute right-0 mt-2 py-2 w-auto bg-white rounded-md shadow-xl z-20">
                                 <div className="block px-4 py-2 mx-2">
-                                    <h1 className="font-semibold text-sm truncate">James Watling</h1>
+                                    <h1 className="font-semibold text-sm truncate">{currentUser?.firstName} {currentUser?.lastName}</h1>
                                     <h3 className="font-thin text-xs">{currentUser!.email}</h3>
                                 </div>
                                 <hr className="my-2" />
@@ -59,10 +64,19 @@ export default function Home() {
                     </div>
                     
                 </div>
-                <div className="m-8 p-4 w-80 h-40 bg-white rounded-xl border shadow-lg">
+                {/* <div className="m-8 p-4 w-80 h-40 bg-white rounded-xl border shadow-lg">
                     <h3 className="text-secondary-700 font-semibold">Total Active Users</h3>
                     <h1 className="text-secondary-900 font-bold text-4xl mt-4">18,765</h1>
-                </div>
+                </div> */}
+
+                <button onClick={displayFieldData}>Print Field Data</button>
+                
+                { fields &&
+                    <div className="m-8 w-full">
+                        <DashboardMapComponent fieldData={fields!}/>
+                    </div>
+                }   
+
                 { error && <p>{error}</p> }
             </div>
         </div>

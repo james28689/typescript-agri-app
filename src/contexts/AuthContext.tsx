@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 interface IUser {
     email: string;
@@ -16,7 +17,7 @@ interface IAuthContext {
     logout(): void;
     changeEmail(email: string): Promise<void>;
     changePassword(password: string): Promise<void>;
-    changeMustOnboard(onboard: boolean): Promise<void>;
+    changeMustOnboard(mustOnboard: boolean): Promise<void>;
 }
 
 const AuthContext = React.createContext({} as IAuthContext);
@@ -29,104 +30,147 @@ export function AuthProvider({ children }: { children: any }) {
     const [currentUser, setCurrentUser] = useState<IUser | null>(null);
     const [loading, setLoading] = useState(false);
     const [accessToken, setAccessToken] = useState("");
-    const [refreshToken, setRefreshToken] = useState("");
+    // const [refreshToken, setRefreshToken] = useState("");
+
+    const history = useHistory();
 
     async function signup(email: string, password: string, firstName: string, lastName: string) {
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/signup`, {
-            firstName,
-            lastName,
-            email,
-            password
-        }).catch((err: any) => {
-            console.log(err);
-        }).then((res: any) => {
+        try{
+            setLoading(true);
+            const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/signup`, {
+                firstName,
+                lastName,
+                email,
+                password
+            })
+
             console.log(res);
-        })
+            
+        } catch (err) {
+            throw err;
+        }
     }
 
     async function login(email: string, password: string) {
-        axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/signin`, {
-            email,
-            password
-        }).catch((err: any) => {
-            console.log(err);
-        }).then((res: any) => {
+        try {
+            const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/signin`, {
+                email,
+                password
+            })
+
             console.log(res)
 
-            const newUserInfo: IUser = {
-                email: res.data.email,
-                firstName: res.data.firstName,
-                lastName: res.data.lastName,
-                mustOnboard: res.data.mustOnboard
+            if (res.data.message) {
+                throw new Error("User not found");
+            } else {
+                const newUserInfo: IUser = {
+                    email: res.data.email,
+                    firstName: res.data.firstName,
+                    lastName: res.data.lastName,
+                    mustOnboard: res.data.mustOnboard
+                }
+                
+                console.log(res.data.refreshToken);
+
+                setAccessToken(res.data.accessToken);
+                // setRefreshToken(res.data.refreshToken);
+                setCurrentUser(newUserInfo);
+                
+                history.push("/");
+                
+                setTimeout(refreshAccessTokens, ((res.data.tokenExpiry * 1000) - 30_000), res.data.refreshToken);
             }
-
-            setCurrentUser(newUserInfo);
-            setAccessToken(res.data.accessToken);
-            setRefreshToken(res.data.refreshToken);
-
-            setTimeout(refreshAccessTokens, ((res.data.tokenExpiry * 1000) - 30_000));
-        })
+        } catch(err) {
+            throw err;
+        }
     }
 
-    async function refreshAccessTokens() {
+    async function refreshAccessTokens(receivedRefreshToken: string) {
+        if (receivedRefreshToken === "") {
+            console.log("Refresh token empty");
+            logout();
+            return;
+        }
         await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/refresh-token`, {
-            refreshToken
+            refreshToken: receivedRefreshToken
         }).catch((err: any) => {
             console.log(err);
         }).then((res: any) => {
             setAccessToken(res.data.accessToken);
-            setRefreshToken(res.data.refreshToken);
+            // setRefreshToken(res.data.refreshToken);
 
-            setTimeout(refreshAccessTokens, ((res.data.tokenExpiry * 1000) - 30_000));
+            setTimeout(refreshAccessTokens, ((res.data.tokenExpiry * 1000) - 30_000), res.data.refreshToken);
         })
     }
 
     function logout() {
         setCurrentUser(null);
         setAccessToken("");
-        setRefreshToken("");
+        // setRefreshToken("");
     }
 
     async function changeEmail(email: string) {
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-email`, {
-            email
-        }, {
-            headers: {
-                "x-access-token": accessToken
-            }
-        }).catch((err: any) => {
-            console.log(err);
-        }).then((res: any) => {
+        try {
+            const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-email`, {
+                email
+            }, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            });
+
             console.log(res);
-        })
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
 
     async function changePassword(password: string) {
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-password`, {
-            password
-        }, {
-            headers: {
-                "x-access-token": accessToken
-            }
-        }).catch((err: any) => {
-            console.log(err);
-        }).then((res: any) => {
+        try {
+            const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-password`, {
+                password
+            }, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            });
+
             console.log(res);
-        })
+        } catch (err) {
+            console.log(err);
+        }
     }
 
-    async function changeMustOnboard(onboard: boolean) {
-        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-onboard`, {
-            onboard
-        }, {
-            headers: {
-                "x-access-token": accessToken
-            }
-        }).catch((err) => {
-            console.log(err)
-        }).then((res: any) => {
+    async function changeMustOnboard(mustOnboard: boolean) {
+        try {
+            const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/change-onboard`, {
+                mustOnboard
+            }, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            });
+
             console.log(res);
-        })
+            await getNewUserData();
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    async function getNewUserData() {
+        try {
+            const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/auth/user-data`, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            });
+
+            setCurrentUser(res.data);
+        } catch (err) {
+            console.log(err);
+        }
     }
     
     const value: IAuthContext = {

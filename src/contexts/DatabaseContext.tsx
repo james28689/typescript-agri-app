@@ -3,7 +3,8 @@ import { Feature } from "geojson";
 import { useAuth } from "./AuthContext";
 import axios from "axios";
 
-interface IField {
+export interface IField {
+    _id: string
     name: string;
     rpa_field_id: string;
     user: string;
@@ -27,11 +28,9 @@ export function DatabaseProvider({ children }: { children: any }) {
     const { currentUser, accessToken } = useAuth();
 
     useEffect(() => {
-        updateFields();
-    }, [currentUser])
-
-    function updateFields() {
         if (currentUser) {
+            console.log()
+
             axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/field/getFieldByUser`, {
                 headers: {
                     "x-access-token": accessToken
@@ -39,8 +38,42 @@ export function DatabaseProvider({ children }: { children: any }) {
             }).catch((err) => {
                 console.log(err);
             }).then((res: any) => {
-                setFields(res.data as IField[])
+                const typedRes = res.data as IField[];
+
+                const output = typedRes.map(field => {
+                    field.geometry.properties!.name = field.name;
+                    return field
+                })
+                
+                setFields(output);
             })
+        } else {
+            setFields(null);
+        }
+    }, [currentUser, accessToken]);
+
+    function updateFields() {
+        if (currentUser) {
+            console.log()
+
+            axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/field/getFieldByUser`, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            }).catch((err) => {
+                console.log(err);
+            }).then((res: any) => {
+                const typedRes = res.data as IField[];
+
+                const output = typedRes.map(field => {
+                    field.geometry.properties!.name = field.name;
+                    return field
+                })
+                
+                setFields(output);
+            })
+        } else {
+            setFields(null);
         }
     }
 

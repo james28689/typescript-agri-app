@@ -1,6 +1,6 @@
-import React from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { useDatabase } from "../contexts/DatabaseContext"
+// import React from "react";
+// import { useAuth } from "../contexts/AuthContext";
+// import { useDatabase } from "../contexts/DatabaseContext"
 
 export default function Settings() {
     // const { removeUser } = useAuth();

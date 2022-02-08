@@ -1,13 +1,25 @@
-import { ReactComponent as HouseIcon } from "../../images/home-alt.svg"
-import NavItem, { LinkType } from "./NavItem"
-import wheatIcon from "../../images/wheat-icon-2.png"
-import { ReactComponent as SettingsIcon } from "../../images/cog.svg"
+import { ReactComponent as HouseIcon } from "../../images/home-alt.svg";
+import NavItem, { LinkType } from "./NavItem";
+import wheatIcon from "../../images/wheat-icon-2.png";
+import { ReactComponent as SettingsIcon } from "../../images/cog.svg";
+import { ReactComponent as AnalyticsIcon } from "../../images/analytics.svg";
+import { ReactComponent as WeatherIcon } from "../../images/sun-cloud.svg";
 
 const NavItemLinks: LinkType[] = [
     {
-        link: "/about",
-        text: "Overview",
+        link: "/",
+        text: "Home",
         icon: HouseIcon
+    },
+    {
+        link: "/overview",
+        text: "Overview",
+        icon: AnalyticsIcon
+    },
+    {
+        link: "/weather",
+        text: "Weather",
+        icon: WeatherIcon
     },
     {
         link: "/settings",
