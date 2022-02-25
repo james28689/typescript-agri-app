@@ -33,7 +33,7 @@ export default function Home() {
 
     return (
         <div className="flex">
-            <Nav />
+            <Nav active="Home" />
 
             <div className="w-screen h-screen ml-60">
                 <div className="flex items-center px-6 py-4">
@@ -72,7 +72,7 @@ export default function Home() {
                 <button onClick={displayFieldData}>Print Field Data</button>
                 
                 { fields &&
-                    <div className="m-8 w-full">
+                    <div className="w-full p-6">
                         <DashboardMapComponent fieldData={fields!}/>
                     </div>
                 }   

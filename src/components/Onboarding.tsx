@@ -31,7 +31,7 @@ export default function Home() {
         console.log(givenNames);
 
         for (let i = 0; i < mapSelectedFields!.features.length; i++) {
-            createField(givenNames.filter(pair => pair.field_id === mapSelectedFields!.features[i].properties!.field_id)[0].name, mapSelectedFields!.features[i].properties!.field_id, mapSelectedFields!.features[i]);
+            createField(givenNames.filter(pair => pair.field_id === mapSelectedFields!.features[i].properties!.field_id)[0].name, mapSelectedFields!.features[i].properties!.field_id, "None", mapSelectedFields!.features[i]);
         }
 
         changeMustOnboard(false);

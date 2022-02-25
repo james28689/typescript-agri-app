@@ -14,9 +14,14 @@ interface IFieldWeather {
 export default function Weather() {
     const { fields } = useDatabase();
     const [fieldWeathers, setFieldWeathers] = useState<IFieldWeather[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    const forceUpdate = React.useReducer(() => ({}), {})[1] as () => void
+    const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
     useEffect(() => {
         if (fields !== null) {
+            setLoading(true);
             let newFieldWeathers: IFieldWeather[] = [];
             fields.forEach(field => {
                 const center = centroid(field.geometry).geometry.coordinates;
@@ -35,16 +40,21 @@ export default function Weather() {
             });
             console.log(newFieldWeathers);
             setFieldWeathers(newFieldWeathers);
+            
+            sleep(300).then(() => {
+                forceUpdate();
+                setLoading(false);
+            });
         }
     }, [fields])
 
     return(
         <div className="flex">
-            <Nav />
+            <Nav active="Weather" />
 
             <div className="w-screen h-screen ml-60">
                 <h1>Weather</h1>
-                { fieldWeathers.map(fieldWeather => {
+                { fieldWeathers?.map(fieldWeather => {
                     return(
                         <ul>
                             <li>{fieldWeather.id}</li>
@@ -56,7 +66,7 @@ export default function Weather() {
                 })
                 }
 
-                <button onClick={() => console.log(fieldWeathers)}>Print fieldWeathers</button>
+                { !loading && <button onClick={() => console.log(fieldWeathers)}>Print fieldWeathers</button>}
             </div>
         </div>
     )

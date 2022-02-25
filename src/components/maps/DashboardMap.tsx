@@ -70,7 +70,7 @@ export default class DashboardMapComponent extends React.Component<MapProps, Map
                 if (e.features) {
                     new mapboxgl.Popup()
                         .setLngLat(e.lngLat)
-                        .setHTML(`<h3>${e.features![0].properties!.name}`)
+                        .setHTML(`<h3>${e.features![0].properties!.name}</h3>`)
                         .addTo(this.map!);
                 }
             })
