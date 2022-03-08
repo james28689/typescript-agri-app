@@ -1,23 +1,19 @@
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Nav from "../components/navbar/Nav";
-import { IStock, useDatabase } from "../contexts/DatabaseContext";
+import { IStock, IUsage, useDatabase } from "../contexts/DatabaseContext";
 
 export default function Stock() {
-    const { stocks, updateStock, deleteStock } = useDatabase();
+    const { stocks, updateStock, deleteStock, usages, fields, createUsage } = useDatabase();
     const [showingModal, setShowingModal] = useState(false);
     const [modalCurrentStockID, setModalCurrentStockID] = useState<string>("");
     const amountUsedRef = useRef<HTMLInputElement>(null);
+    const fieldRef = useRef<HTMLSelectElement>(null);
 
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        const newStock: IStock = {
-            ...stocks?.find(stock => stock._id === modalCurrentStockID)!,
-            used: stocks?.find(stock => stock._id === modalCurrentStockID)!.used! + parseFloat(amountUsedRef.current!.value)
-        }
-
-        updateStock(newStock);
+        createUsage(parseFloat(amountUsedRef.current!.value), modalCurrentStockID, fields!.find(f => f.name === fieldRef.current!.value)!._id);
         setShowingModal(false);
     }
 
@@ -33,7 +29,7 @@ export default function Stock() {
                         <Link to="/create-order" className="ml-auto text-primary-600 hover:text-primary-900">Create Order</Link>
                     </div>
 
-                    <div className="my-4 align-middle shadow-md overflow-hidden border-gray-700  rounded-lg">
+                    <div className="my-4 align-middle shadow-md overflow-hidden border-gray-700 rounded-lg">
                         <table className="table-auto divide-y divide-gray-200 min-w-full">
                             <thead className="bg-gray-50">
                                 <tr>
@@ -55,7 +51,7 @@ export default function Stock() {
                                     return(
                                         <tr>
                                             {
-                                                [stock.name, stock.type, stock.units, stock.orders.map(order => order.amount).reduce((a,b) => a+b, 0) - stock.used, stock.used, stock.orders.map(order => order.amount * order.pricePerUnit).reduce((a,b) => a+b, 0)].map(property => {
+                                                [stock.name, stock.type, stock.units, stock.orders.map(o => o.amount).reduce((a,b) => a+b, 0) - usages?.filter(u => u.stock === stock._id).map(u => u.amount).reduce((a,b) => a+b, 0)!, usages?.filter(u => u.stock === stock._id).map(u => u.amount).reduce((a,b) => a+b, 0), stock.orders.map(order => order.amount * order.pricePerUnit).reduce((a,b) => a+b, 0)].map(property => {
                                                     return <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{property}</td>
                                                 })
                                             }
@@ -95,7 +91,18 @@ export default function Stock() {
                             <form onSubmit={handleSubmit}>
                             <div className="p-6 space-y-6">
                                 <label className="block mt-2 mb-2 text-sm font-medium text-secondary-900">Amount Used</label>
-                                <input type="number" step="any" min={0} max={stocks?.find(stock => stock._id === modalCurrentStockID!)!.orders.map(order => order.amount).reduce((a,b) => a+b, 0)! - stocks?.find(stock => stock._id === modalCurrentStockID!)!.used!} ref={amountUsedRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                                <input type="number" step="any" min={0} max={stocks?.find(stock => stock._id === modalCurrentStockID!)!.orders.map(order => order.amount).reduce((a,b) => a+b, 0)! - usages?.filter(u => u.stock === modalCurrentStockID!)!.map(u => u.amount).reduce((a,b) => a+b, 0)!} ref={amountUsedRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+
+                                <label className="block mb-2 text-sm font-medium text-secondary-900">Field</label>
+                                <select ref={fieldRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
+                                    {
+                                        fields && fields.map(field => {
+                                            return(
+                                                <option>{field.name}</option>
+                                            )
+                                        })
+                                    }
+                                </select>
                             </div>
                             
                             <div className="flex flex-row items-center p-6 rounded-b border-t border-secondary-200 w-full">

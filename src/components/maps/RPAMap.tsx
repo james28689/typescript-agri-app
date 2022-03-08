@@ -147,20 +147,21 @@ export default class RPAMapComponent extends React.Component<MapProps, MapState>
 
     render() {
         return (
-            <div id="container" style={{ display: "flex" }}>
-                <div id="left" style={{ width: "100%" }}>
-                    <div id="map-container" style={{ width: "100%", height: 800 }}></div>
+            <div className="flex">
+                <div className="w-full">
+                    <div id="map-container" style={{ width: "100%", height: 700 }}></div>
 
-                    <button onClick={this.handleSelectAll}>Select All</button>
-
-                    <button onClick={this.handleFinish}>Next</button>
+                    <div className="pt-4 space-x-3">
+                        <button onClick={this.handleSelectAll} className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg font-semibold">Select All</button>
+                        <button onClick={this.handleFinish} className="text-white bg-primary-500 hover:bg-primary-600 px-4 py-2 rounded-lg font-semibold">Next</button>
+                    </div>
                 </div>
 
-                <div id="right" style={{ minWidth: "200px" }}>
-                    <h2>Selected Field IDs</h2>
+                <div id="right" className="ml-4" style={{ minWidth: "300px" }}>
+                    <h2 className="text-2xl font-semibold mb-2">Selected Field IDs</h2>
                     <ul>
                     { this.state.selectedFields.map(field => {
-                        return <li key={field}>{field}</li> 
+                        return <li key={field} className="text-md">• {field}</li> 
                     }) }
                     </ul>
                 </div>

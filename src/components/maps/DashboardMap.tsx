@@ -2,6 +2,7 @@ import React from "react";
 import mapboxgl from "mapbox-gl";
 import geojson from "geojson";
 import { IField } from "../../contexts/DatabaseContext";
+const turf = require("@turf/turf")
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN!;
 
@@ -74,6 +75,8 @@ export default class DashboardMapComponent extends React.Component<MapProps, Map
                         .addTo(this.map!);
                 }
             })
+
+            this.map!.flyTo({ center: turf.centerOfMass(this.state.fieldData!).geometry.coordinates!, zoom: 11 });
         })
 
 
@@ -81,7 +84,7 @@ export default class DashboardMapComponent extends React.Component<MapProps, Map
 
     render() {
         return (
-            <div id="map-container" style={{ width: "100%", height: "500px" }}>
+            <div id="map-container" style={{ width: "100%", height: "100%" }}>
             </div>
         )
     }

@@ -131,15 +131,14 @@ export default class NamingMapComponent extends React.Component<MapProps, MapSta
 
     render() {
         return (
-            <div style={{ display: "flex" }}>
-                <div id="map-container" style={{ width: "100%", height: 800 }}></div>
-                <div style={{ width: 300 }}>
-                    <h2>{this.state.currentField!.properties!.field_id} - {this.state.namedFieldCount} of {this.props.fields.features.length}</h2>
-                    <form onSubmit={this.handleNameSubmit} >
-                        <label>Name: </label>
-                        <input type="text" value={this.state.inputValue} onChange={event => this.setState({inputValue: event.target.value})} />
-                        <br /><br />
-                        <button type="submit">{ this.state.namedFieldCount === this.props.fields.features.length ? "Finish" : "Next"}</button>
+            <div className="flex" style={{ display: "flex" }}>
+                <div id="map-container" style={{ width: "100%", height: 600 }}></div>
+                <div className="ml-4" style={{ minWidth: "300px" }}>
+                    <h2 className="text-2xl font-semibold mb-2">{this.state.currentField!.properties!.field_id} - {this.state.namedFieldCount} of {this.props.fields.features.length}</h2>
+                    <form onSubmit={this.handleNameSubmit}>
+                        <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Name</label>
+                        <input type="text" value={this.state.inputValue} onChange={event => this.setState({inputValue: event.target.value})} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                        <button type="submit" className="text-white bg-primary-500 hover:bg-primary-600 px-4 py-2 rounded-lg font-semibold">{this.state.namedFieldCount === this.props.fields.features.length ? "Finish" : "Next"}</button>
                     </form>
                 </div>
             </div>

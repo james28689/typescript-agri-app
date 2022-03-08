@@ -37,51 +37,31 @@ export default function Home() {
         changeMustOnboard(false);
     }
 
-    // function sendFieldsToDatabase(givenNames: FieldNamePair[]) {
-    //     console.log(givenNames);
-    //     for (let i = 0; i < mapSelectedFields!.features.length; i++) {
-    //         addDoc(collection(database, "fields"), {
-    //             name: givenNames.filter(pair => pair.field_id === mapSelectedFields!.features[i].properties!.field_id)[0].name,
-    //             userID: currentUser!.uid,
-    //             rpa_field_id: mapSelectedFields!.features[i].properties!.field_id,
-    //         })
-    //         .then((fieldRef) => {
-    //             set(ref(realtimeDB, "fields/" + currentUser!.uid + "/" + fieldRef.id), mapSelectedFields!.features[i]);
-    //         })
-    //         .then(() => {
-    //             updateDoc(doc(database, "users", currentUser!.uid), {
-    //                 mustOnboard: false
-    //             });
-    //         })
-    //     }
-    // }
-
     if (onboardingStep === OnboardingStep.SBI) {
         return (
-            <div>
-                <h1>Welcome to Agri App</h1>
+            <div className="p-6">
+                <h1 className="text-3xl font-semibold">Welcome to Agri</h1>
 
-                <form onSubmit={() => { setSBI(sbiRef.current!.value); setOnboardingStep(OnboardingStep.Map) }} >
-                    <label>SBI:</label>       
-                    <input type="text" ref={sbiRef} />
-                    <br /><br />
+                <form onSubmit={() => { setSBI(sbiRef.current!.value); setOnboardingStep(OnboardingStep.Map) }} className="max-w-sm" >
+                    <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">SBI</label>
+                    <input type="text" ref={sbiRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
 
-                    <button type="submit">Continue</button>
+                    <button type="submit" className="text-white bg-primary-500 hover:bg-primary-600 px-4 py-2 rounded-lg font-semibold">Next</button>
                 </form>
 
             </div>
         )
     } else if (onboardingStep === OnboardingStep.Map) {
         return (
-            <div>
-                <h1>Welcome to Agri App</h1>
+            <div className="p-6">
+                <h1 className="text-3xl font-semibold mb-4">Welcome to Agri App</h1>
                 <RPAMapComponent SBI={SBI} exportFields={receiveMapFields} />
             </div>
         )
     } else if (onboardingStep === OnboardingStep.Name) {
         return (
-            <div>
-                <h1>Welcome to Agri App</h1>
+            <div className="p-6">
+                <h1 className="text-3xl font-semibold mb-4">Welcome to Agri App</h1>
 
                 <NamingMapComponent fields={mapSelectedFields!} exportNames={sendFieldsToDatabase}/>
             </div>
