@@ -3,7 +3,6 @@ import Home from './pages/Home';
 import Overview from "./pages/Overview";
 import Login from "./pages/Login";
 import Signup from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';
 import Settings from './pages/Settings';
 import FieldPage from './pages/FieldPage';
 import CreateOrder from "./pages/CreateOrder";
@@ -38,7 +37,6 @@ function App() {
 						<PrivateRoute path="/settings" component={Settings} />
 						<Route path = "/login" component={Login} />
 						<Route path = "/signup" component={Signup} />
-						<Route path="/forgot-password" component={ForgotPassword} />
 					</Switch>
 				</DatabaseProvider>
 			</AuthProvider>

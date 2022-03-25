@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Nav from "../components/navbar/Nav";
 import { useDatabase } from "../contexts/DatabaseContext";
 import { Link } from "react-router-dom";
@@ -6,7 +6,26 @@ import moment from "moment";
 
 export default function Sales() {
     const { fields, sales } = useDatabase();
+    const [usedCropTypes, setUsedCropTypes] = useState<string[]>([]);
     const [currentCrop, setCurrentCrop] = useState("");
+
+    function calculateAverageYield() {
+        const totalSales = [...[...sales?.filter(s => s.crop === currentCrop) ?? []].map(s => s.amount) ?? [], 0].reduce((a,b) => a+b, 0);
+        const totalArea = fields!.filter(f => f.crop === currentCrop).map(f => f.geometry.properties!.area_ha).reduce((a,b) => a+b, 0);
+        return totalSales / totalArea;
+    }
+
+    useEffect(() => {
+        if (fields) {
+            const loadedCropTypes = Array.from(new Set(fields.map(f => f.crop))).filter(crop => crop !== "None");
+
+            setUsedCropTypes(loadedCropTypes);
+
+            if (loadedCropTypes.length !== 0) {
+                setCurrentCrop(loadedCropTypes[0]);
+            }
+        }
+    }, [])
 
     return(
         <div className="flex">
@@ -16,21 +35,19 @@ export default function Sales() {
                 <div className="p-6">
                     <h1 className="text-3xl my-4 font-semibold">Sales</h1>
 
-                    <div className="flex flex-row space-x-5">
+                    <div className="inline-flex rounded-md shadow-sm mb-6">
 
                         {
-                            fields && Array.from(new Set(fields.map(f => f.crop))).map(crop => {
-                                if (crop !== "None") {
-                                    return(
-                                        <button onClick={() => setCurrentCrop(crop)} className={`${currentCrop === crop ? "text-primary-500" : "text-secondary-900"} text-lg`}>{crop}</button>
-                                    )
-                                }
+                            usedCropTypes.map(crop => {
+                                return(
+                                    <button onClick={() => setCurrentCrop(crop)} className={`py-2 px-4 text-sm font-medium bg-white ${usedCropTypes.indexOf(crop) === 0 ? "rounded-l-lg" : ((usedCropTypes.indexOf(crop) === (usedCropTypes.length - 1)) ? "rounded-r-lg" : "")} border border-gray-200 hover:bg-gray-100 hover:text-primary-600 focus:z-10 focus:ring-2 focus:ring-primary-600 focus:text-primary-600 ${crop === currentCrop ? "text-primary-600" : "text-gray-900"}`}>{crop}</button>
+                                )
                             })
                         }
                     </div>
                     
-                    <p>You have {fields!.filter(f => f.crop === currentCrop).map(f => f.geometry.properties!.area_ha).reduce((a,b) => a+b, 0).toFixed(2)} hectares of land dedicated to growing {currentCrop}</p>
-                    <p>From the data entered, you have a yield of {([...[...sales?.filter(s => s.crop === currentCrop) ?? []].map(s => s.amount) ?? [], 0].reduce((a,b) => a+b, 0) / fields!.filter(f => f.crop === currentCrop).map(f => f.geometry.properties!.area_ha).reduce((a,b) => a+b, 0)).toFixed(2) ?? 0} tonnes per hectare.</p>
+                    <p>You have {fields!.filter(f => f.crop === currentCrop).map(f => f.geometry.properties!.area_ha).reduce((a,b) => a+b, 0).toFixed(2)} hectares of land dedicated to growing {currentCrop}.
+                    From the data entered, you have a yield of {calculateAverageYield().toFixed(2) ?? 0} tonnes per hectare.</p>
 
                     <div className="my-4 align-middle shadow-md overflow-hidden border-gray-700 rounded-lg">
                         <table className="table-auto divide-y divide-gray-200 min-w-full">

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Nav from "../components/navbar/Nav";
 import { useDatabase } from "../contexts/DatabaseContext";
 
@@ -32,7 +32,7 @@ export default function CreateStock() {
 
                     <form onSubmit={handleSubmit}>
                         <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Stock Item</label>
-                        <select ref={itemRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
+                        <select ref={itemRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
                             { stocks!.map(stock => {
                                 return(
                                     <option>{stock.name}</option>
@@ -41,10 +41,10 @@ export default function CreateStock() {
                         </select>
 
                         <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Amount</label>
-                        <input type="number" step="any" ref={amountRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                        <input type="number" step="any" ref={amountRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
 
                         <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Price Per Unit (£)</label>
-                        <input type="number" step="any" ref={pricePerUnitRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                        <input type="number" step="any" ref={pricePerUnitRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
 
                         <button type="submit" className="text-white bg-primary-500 hover:bg-primary-600 px-4 py-2 w-full rounded-lg font-semibold">Confirm Order</button>
                     </form>

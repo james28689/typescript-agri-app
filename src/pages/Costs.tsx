@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Nav from "../components/navbar/Nav";
 import { useDatabase } from "../contexts/DatabaseContext";
 import { Link } from "react-router-dom";

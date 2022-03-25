@@ -34,20 +34,22 @@ export default function CreateSale() {
                     <h1 className="text-3xl font-semibold pb-6">Enter Sale</h1>
 
                     <label className="block mb-2 text-sm font-medium text-secondary-900">Crop</label>
-                    <select ref={cropRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
+                    <select ref={cropRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
                         {
                             fields && Array.from(new Set(fields.map(f => f.crop))).map(crop => {
                                 if (crop !== "None") {
                                     return(
                                         <option>{crop}</option>
                                     )
+                                } else {
+                                    return <></>
                                 }
                             })
                         }
                     </select>
 
                     <label className="block mb-2 text-sm font-medium text-secondary-900">Field</label>
-                    <select ref={fieldRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
+                    <select ref={fieldRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
                         {
                             fields && fields.map(field => {
                                 return(
@@ -59,10 +61,10 @@ export default function CreateSale() {
                     
                     <form ref={formRef} onSubmit={handleSubmit}>
                         <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Amount (tonnes)</label>
-                        <input type="number" step="any" ref={amountRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                        <input type="number" step="any" required ref={amountRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
 
                         <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Sale Price</label>
-                        <input type="number" step="any" ref={priceRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                        <input type="number" step="any" ref={priceRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
 
                         <button type="submit" className="text-white bg-primary-500 hover:bg-primary-600 px-4 py-2 w-full rounded-lg font-semibold">Enter</button>
                     </form>

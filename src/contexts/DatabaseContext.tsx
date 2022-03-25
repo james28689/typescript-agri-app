@@ -24,8 +24,6 @@ export interface IStock {
     name: string;
     type: string;
     units: string;
-    amount: number;
-    used: number;
     orders: IOrder[];
     user: string;
 }
@@ -71,7 +69,7 @@ interface IDatabaseContext {
     updateField(field: IField): void;
 
     updateStocks(): void;
-    createStock(name: string, type: string, units: string, amount: number, used: number): void;
+    createStock(name: string, type: string, units: string): void;
     updateStock(stock: IStock): void;
     deleteStock(stockID: string): void;
 
@@ -90,6 +88,8 @@ interface IDatabaseContext {
     createUsage(amount: number, stock: string, field: string): void;
     updateUsage(usage: IUsage): void;
     deleteUsage(usageID: string): void;
+
+    clearAllData(): void;
 }
 
 const DatabaseContext = React.createContext({} as IDatabaseContext);
@@ -120,7 +120,9 @@ export function DatabaseProvider({ children }: { children: any }) {
                 const typedRes = res.data as IField[];
 
                 const output = typedRes.map(field => {
-                    field.geometry.properties!.name = field.name;
+                    if (field.geometry.properties) {
+                        field.geometry.properties!.name = field.name;
+                    }
                     return field;
                 });
                 
@@ -218,8 +220,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch((err) => {
                 console.log(err)
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateFields();
             })
         }
@@ -235,8 +236,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch((err) => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateFields();
             })
         }
@@ -260,22 +260,19 @@ export function DatabaseProvider({ children }: { children: any }) {
         }
     }
 
-    function createStock(name: string, type: string, units: string, amount: number, used: number) {
+    function createStock(name: string, type: string, units: string) {
         if (currentUser) {
             axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/stock/create`, {
                 name,
                 type,
                 units,
-                amount,
-                used
             }, {
                 headers: {
                     "x-access-token": accessToken
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateStocks();
             })
         }
@@ -291,8 +288,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateStocks();
             })
         }
@@ -306,8 +302,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateStocks();
             })
         }
@@ -325,8 +320,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateStocks();
             })
         }
@@ -342,7 +336,6 @@ export function DatabaseProvider({ children }: { children: any }) {
                 console.log(err);
             }).then((res:any) => {
                 const typedRes = res.data as ISale[];
-                console.log(typedRes);
                 setSales(typedRes);
             })
         } else {
@@ -363,8 +356,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateSales();
             });
         }
@@ -380,8 +372,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateSales();
             });
         }
@@ -395,8 +386,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateSales();
             })
         }
@@ -412,7 +402,6 @@ export function DatabaseProvider({ children }: { children: any }) {
                 console.log(err);
             }).then((res:any) => {
                 const typedRes = res.data as ICost[];
-                console.log(typedRes);
                 setCosts(typedRes);
             })
         } else {
@@ -433,8 +422,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateCosts();
             });
         }
@@ -450,8 +438,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateCosts();
             });
         }
@@ -465,8 +452,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateCosts();
             })
         }
@@ -482,7 +468,6 @@ export function DatabaseProvider({ children }: { children: any }) {
                 console.log(err);
             }).then((res:any) => {
                 const typedRes = res.data as IUsage[];
-                console.log(typedRes);
                 setUsages(typedRes);
             });
         } else {
@@ -502,8 +487,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateUsages();
             });
         }
@@ -519,8 +503,7 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
                 updateUsages();
             });
         }
@@ -534,8 +517,64 @@ export function DatabaseProvider({ children }: { children: any }) {
                 }
             }).catch(err => {
                 console.log(err);
-            }).then((res:any) => {
-                console.log(res);
+            }).then(() => {
+                updateUsages();
+            })
+        }
+    }
+
+    async function clearAllDataAsync() {
+        if (currentUser) {
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/field/delete-all`, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            }).catch(err => {
+                console.log(err);
+            });
+
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/stock/delete-all`, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            }).catch(err => {
+                console.log(err);
+            });
+
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/sale/delete-all`, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            }).catch(err => {
+                console.log(err);
+            });
+
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/cost/delete-all`, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            }).catch(err => {
+                console.log(err);
+            });
+
+            await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/usage/delete-all`, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            }).catch(err => {
+                console.log(err);
+            });
+        }
+    }
+
+    function clearAllData() {
+        if (currentUser) {
+            clearAllDataAsync()
+            .then(() => {
+                updateFields();
+                updateStocks();
+                updateSales();
+                updateCosts();
                 updateUsages();
             })
         }
@@ -571,7 +610,9 @@ export function DatabaseProvider({ children }: { children: any }) {
         updateUsages,
         createUsage,
         updateUsage,
-        deleteUsage
+        deleteUsage,
+
+        clearAllData
     }
 
     return (

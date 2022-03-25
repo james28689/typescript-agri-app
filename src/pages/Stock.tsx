@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import Nav from "../components/navbar/Nav";
-import { IStock, IUsage, useDatabase } from "../contexts/DatabaseContext";
+import { useDatabase } from "../contexts/DatabaseContext";
 
 export default function Stock() {
-    const { stocks, updateStock, deleteStock, usages, fields, createUsage } = useDatabase();
+    const { stocks, deleteStock, usages, fields, createUsage } = useDatabase();
     const [showingModal, setShowingModal] = useState(false);
     const [modalCurrentStockID, setModalCurrentStockID] = useState<string>("");
     const amountUsedRef = useRef<HTMLInputElement>(null);
@@ -51,7 +51,9 @@ export default function Stock() {
                                     return(
                                         <tr>
                                             {
-                                                [stock.name, stock.type, stock.units, stock.orders.map(o => o.amount).reduce((a,b) => a+b, 0) - usages?.filter(u => u.stock === stock._id).map(u => u.amount).reduce((a,b) => a+b, 0)!, usages?.filter(u => u.stock === stock._id).map(u => u.amount).reduce((a,b) => a+b, 0), stock.orders.map(order => order.amount * order.pricePerUnit).reduce((a,b) => a+b, 0)].map(property => {
+                                                [stock.name, stock.type, stock.units, stock.orders.map(o => o.amount).reduce((a,b) => a+b, 0) - usages?.filter(u => u.stock === stock._id).map(u => u.amount).reduce((a,b) => a+b, 0)!,
+                                                    usages?.filter(u => u.stock === stock._id).map(u => u.amount).reduce((a,b) => a+b, 0),
+                                                    stock.orders.map(order => order.amount * order.pricePerUnit).reduce((a,b) => a+b, 0)].map(property => {
                                                     return <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{property}</td>
                                                 })
                                             }

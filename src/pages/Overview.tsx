@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Nav from "../components/navbar/Nav";
-import { IField, useDatabase } from "../contexts/DatabaseContext";
+import { useDatabase } from "../contexts/DatabaseContext";
 import { centroid } from "@turf/turf";
 import axios from "axios";
 
@@ -99,11 +99,11 @@ export default function Overview() {
         }
 
         getWeather();
-    }, [])
+    }, [fields])
 
     return (
         <div className="flex">
-            <Nav active="Overview" />
+            <Nav active="Fields" />
 
             <div className="w-screen h-screen ml-60">
                 <div className="p-6">
@@ -136,7 +136,6 @@ export default function Overview() {
                                         <tr>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{field.name}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 flex flex-row space-x-2"><Icon className="w-6 h-6 text-primary-600 fill-current" /><p>{text}</p></td>
-                                            {/* <td><CloudsIcon /></td> */}
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{field.geometry.properties!.area_ha.toFixed(2)}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{field.crop}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

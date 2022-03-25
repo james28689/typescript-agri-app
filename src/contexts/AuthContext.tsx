@@ -18,6 +18,7 @@ interface IAuthContext {
     changeEmail(email: string): Promise<void>;
     changePassword(password: string): Promise<void>;
     changeMustOnboard(mustOnboard: boolean): Promise<void>;
+    deleteUserData(): void;
 }
 
 const AuthContext = React.createContext({} as IAuthContext);
@@ -30,7 +31,7 @@ export function AuthProvider({ children }: { children: any }) {
     const [currentUser, setCurrentUser] = useState<IUser | null>(null);
     const [loading, setLoading] = useState(false);
     const [accessToken, setAccessToken] = useState("");
-    // const [refreshToken, setRefreshToken] = useState("");
+    let refreshTokenTimeout: number;
 
     const history = useHistory();
 
@@ -42,7 +43,9 @@ export function AuthProvider({ children }: { children: any }) {
                 lastName,
                 email,
                 password
-            })
+            });
+
+            setLoading(false);
 
             console.log(res);
             
@@ -73,7 +76,6 @@ export function AuthProvider({ children }: { children: any }) {
                 console.log(res.data.refreshToken);
 
                 setAccessToken(res.data.accessToken);
-                // setRefreshToken(res.data.refreshToken);
                 setCurrentUser(newUserInfo);
                 
                 history.push("/");
@@ -93,20 +95,25 @@ export function AuthProvider({ children }: { children: any }) {
         }
         await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/auth/refresh-token`, {
             refreshToken: receivedRefreshToken
+        }, {
+            headers: {
+                "x-access-token": accessToken
+            }
         }).catch((err: any) => {
             console.log(err);
         }).then((res: any) => {
             setAccessToken(res.data.accessToken);
-            // setRefreshToken(res.data.refreshToken);
 
-            setTimeout(refreshAccessTokens, ((res.data.tokenExpiry * 1000) - 30_000), res.data.refreshToken);
+            refreshTokenTimeout = setTimeout(refreshAccessTokens, ((res.data.tokenExpiry * 1000) - 30_000), res.data.refreshToken);
         })
     }
 
     function logout() {
         setCurrentUser(null);
         setAccessToken("");
-        // setRefreshToken("");
+        if (refreshTokenTimeout) {
+            clearTimeout(refreshTokenTimeout);
+        }
     }
 
     async function changeEmail(email: string) {
@@ -172,6 +179,20 @@ export function AuthProvider({ children }: { children: any }) {
             console.log(err);
         }
     }
+
+    function deleteUserData() {
+        if (currentUser) {
+            axios.delete(`${process.env.REACT_APP_BACKEND_URL}/api/auth/delete-user-data`, {
+                headers: {
+                    "x-access-token": accessToken
+                }
+            }).catch(err => {
+                console.log(err);
+            }).then(() => {
+                logout();
+            })
+        }
+    }
     
     const value: IAuthContext = {
         currentUser,
@@ -181,7 +202,8 @@ export function AuthProvider({ children }: { children: any }) {
         logout,
         changeEmail,
         changePassword,
-        changeMustOnboard
+        changeMustOnboard,
+        deleteUserData
     };
 
     return (

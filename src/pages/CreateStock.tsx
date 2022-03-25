@@ -15,7 +15,7 @@ export default function CreateStock() {
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         
-        createStock(nameRef.current!.value, typeRef.current!.value, unitsRef.current!.value, 0, 0);
+        createStock(nameRef.current!.value, typeRef.current!.value, unitsRef.current!.value);
         history.goBack();
     }
 
@@ -32,12 +32,12 @@ export default function CreateStock() {
 
                     <h1 className="text-3xl font-semibold">Create Stock</h1>
                     
-                    <form ref={formRef} onSubmit={handleSubmit}>
+                    <form ref={formRef} onSubmit={handleSubmit} className="max-w-2xl">
                         <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Name</label>
-                        <input type="text" ref={nameRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                        <input type="text" ref={nameRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
 
                         <label className="block mb-2 text-sm font-medium text-secondary-900">Type</label>
-                        <select ref={typeRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
+                        <select ref={typeRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
                             <option>Adjuvant</option>
                             <option>Fertiliser</option>
                             <option>Fungicide</option>
@@ -49,7 +49,7 @@ export default function CreateStock() {
                         </select>
 
                         <label className="block mb-2 text-sm font-medium text-secondary-900">Units</label>
-                        <select ref={unitsRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
+                        <select ref={unitsRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
                             <option>L</option>
                             <option>ml</option>
                             <option>kg</option>

@@ -4,7 +4,7 @@ import Nav from "../components/navbar/Nav";
 import { useDatabase } from "../contexts/DatabaseContext";
 
 export default function CreateCost() {
-    const { fields, costs, createCost } = useDatabase();
+    const { fields, createCost } = useDatabase();
     const formRef = useRef<HTMLFormElement>(null);
     const titleRef = useRef<HTMLInputElement>(null);
     const detailRef = useRef<HTMLTextAreaElement>(null);
@@ -35,13 +35,13 @@ export default function CreateCost() {
 
                     <form ref={formRef} onSubmit={handleSubmit}>
                         <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Title</label>
-                        <input type="text" ref={titleRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                        <input type="text" ref={titleRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
                         
                         <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Detail</label>
-                        <textarea ref={detailRef} rows={4} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500" placeholder="Enter details..." />
+                        <textarea ref={detailRef} rows={4} required className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500" placeholder="Enter details..." />
 
                         <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Field</label>
-                        <select ref={fieldRef} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
+                        <select ref={fieldRef} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3">
                             {
                                 fields && fields.map(f => f.name).map(name => {
                                     return(

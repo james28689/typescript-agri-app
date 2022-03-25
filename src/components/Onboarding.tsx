@@ -19,22 +19,21 @@ export default function Home() {
     const [mapSelectedFields, setMapSelectedFields] = useState<geojson.FeatureCollection>();
 
     const { changeMustOnboard } = useAuth();
-    const { createField } = useDatabase();
+    const { createField, updateFields } = useDatabase();
 
     function receiveMapFields(fields: geojson.FeatureCollection) {
-        console.log(fields);
         setMapSelectedFields(fields);
         setOnboardingStep(OnboardingStep.Name);
     }
 
-    function sendFieldsToDatabase(givenNames: FieldNamePair[]) {
-        console.log(givenNames);
-
+    async function sendFieldsToDatabase(givenNames: FieldNamePair[]) {
         for (let i = 0; i < mapSelectedFields!.features.length; i++) {
-            createField(givenNames.filter(pair => pair.field_id === mapSelectedFields!.features[i].properties!.field_id)[0].name, mapSelectedFields!.features[i].properties!.field_id, "None", mapSelectedFields!.features[i]);
+            await createField(givenNames.filter(pair => pair.field_id === mapSelectedFields!.features[i].properties!.field_id)[0].name, mapSelectedFields!.features[i].properties!.field_id, "None", mapSelectedFields!.features[i]);
         }
 
-        changeMustOnboard(false);
+        await new Promise(r => setTimeout(r, 1000));
+
+        await changeMustOnboard(false);
     }
 
     if (onboardingStep === OnboardingStep.SBI) {

@@ -16,7 +16,6 @@ export default function Signup() {
 
     const { signup } = useAuth();
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
     const history = useHistory();
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -29,21 +28,18 @@ export default function Signup() {
 
         try {
             setError("");
-            setLoading(true);
             await signup(emailRef.current!.value, passwordRef.current!.value, firstNameRef.current!.value, lastNameRef.current!.value);
-            history.push("/");
+            history.push("/login");
         } catch (error) {
             console.log(error);
             setError("Failed to create an account");
         }
-
-        setLoading(false);
     }
 
     return (
         <BackgroundCard title="Sign Up">
 
-            { error && <p>{error}</p> }
+            { error && <p className="text-red-600">{error}</p> }
 
             <form className="space-y-6" onSubmit={handleSubmit}>
                 <LargeTextInput labelText="Email Address" inputType="email" inputRef={emailRef} />
@@ -51,7 +47,7 @@ export default function Signup() {
                 <LargeTextInput labelText="Last Name" inputType="text" inputRef={lastNameRef} />
                 <LargeTextInput labelText="Password" inputType="password" inputRef={passwordRef} />
                 <LargeTextInput labelText="Confirm Password" inputType="password" inputRef={passwordConfirmRef} />
-                <LargeButton text="Sign Up" loading={loading} />
+                <LargeButton text="Sign Up" loading={false} />
             </form>
 
             <div className="text-sm font-semibold text-gray-700 text-center mt-8">

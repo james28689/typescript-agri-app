@@ -72,7 +72,8 @@ export default class RPAMapComponent extends React.Component<MapProps, MapState>
 
         this.map.addControl(new mapboxgl.NavigationControl());
 
-        fetch(`https://environment.data.gov.uk/arcgis/rest/services/RPA/LandParcels/MapServer/0/query?where=SBI=${this.props.SBI!}&f=geojson&outFields=sheet_id,parcel_id,id,area_ha`)
+        fetch(`https://environment.data.gov.uk/arcgis/rest/services/RPA/LandParcels/MapServer/0/query?where=SBI=${
+            this.props.SBI!}&f=geojson&outFields=sheet_id,parcel_id,id,area_ha`)
             .then(res => res.json())
             .then((data: geojson.FeatureCollection) => {
                 console.log(data);

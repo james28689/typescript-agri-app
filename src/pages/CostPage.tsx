@@ -21,7 +21,7 @@ export default function CostPage() {
     useEffect(() => {
         let newCost = costs!.filter(cost => {return cost._id === id})[0];
         setCost(newCost);
-    }, [costs])
+    }, [costs, id])
 
     function update() {
         const newCost = {
@@ -51,13 +51,13 @@ export default function CostPage() {
                             <div className="space-y-3">
                             <h1 className="text-3xl font-semibold">Editing {cost.title}</h1>
                             <label className="block mb-2 text-sm font-medium text-secondary-900">Title</label>
-                            <input type="text" ref={titleRef} defaultValue={cost.title} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                            <input type="text" ref={titleRef} defaultValue={cost.title} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
 
                             <label className="block mb-2 text-sm font-medium text-secondary-900">Detail</label>
-                            <textarea ref={detailRef} rows={4} defaultValue={cost.detail} className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500" placeholder="Enter details..." />
+                            <textarea ref={detailRef} rows={4} defaultValue={cost.detail} required className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500" placeholder="Enter details..." />
 
                             <label className="block mt-6 mb-2 text-sm font-medium text-secondary-900">Amount (£)</label>
-                            <input type="number" step="any" ref={amountRef} defaultValue={cost.amount} className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
+                            <input type="number" step="any" ref={amountRef} defaultValue={cost.amount} required className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 mb-3" />
 
                             <button onClick={update} className="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2">Update</button>
                             </div>
@@ -74,14 +74,3 @@ export default function CostPage() {
         </div>
     )
 }
-
-/* <select id="crops" className="bg-secondary-50 border border-secondary-300 text-secondary-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-    <option>Adjuvants</option>
-    <option>Fertiliser</option>
-    <option>Fungicides</option>
-    <option>Harvest</option>
-    <option>Herbicides</option>
-    <option>Insecticides</option>
-    <option>Lime</option>
-    <option>Seed / Plants</option>
-</select> */
